@@ -430,7 +430,9 @@ async function testX402Paywall() {
   app.use(paywall.middleware());
   app.get('/unprotected', (_req, res) => res.json({ ok: true }));
 
-  const server = app.listen(0);
+  const server = await new Promise<any>((resolve) => {
+    const s = app.listen(0, () => resolve(s));
+  });
   const addr = server.address() as any;
   const baseUrl = `http://127.0.0.1:${addr.port}`;
 
@@ -470,6 +472,20 @@ async function testX402Paywall() {
       },
     });
     assert(res4.status === 402, 'Payment replay rejected');
+
+    // Underpaid payment should be rejected
+    paywall.recordPayment('0xunderpaid', '0.005', 'polygon', '0xpayer2');
+    const res5 = await fetch(`${baseUrl}/test/service`, {
+      headers: { 'X-Payment-Proof': 'valid', 'X-Payment-TxHash': '0xunderpaid' },
+    });
+    assert(res5.status === 402, 'Underpaid payment rejected');
+
+    // Wrong chain payment should be rejected
+    paywall.recordPayment('0xwrongchain', '0.01', 'ethereum', '0xpayer3');
+    const res6 = await fetch(`${baseUrl}/test/service`, {
+      headers: { 'X-Payment-Proof': 'valid', 'X-Payment-TxHash': '0xwrongchain' },
+    });
+    assert(res6.status === 402, 'Wrong chain payment rejected');
 
     // Demo services
     createDemoPaywalledServices(paywall);
@@ -537,7 +553,9 @@ async function testRoutes() {
   app.use(express.json());
   app.use('/api', createRouter(agent));
 
-  const server = app.listen(0);
+  const server = await new Promise<any>((resolve) => {
+    const s = app.listen(0, () => resolve(s));
+  });
   const addr = server.address() as any;
   const base = `http://127.0.0.1:${addr.port}`;
 
@@ -716,7 +734,9 @@ async function testDashboard() {
   // Instead, test the full server
   app.get('/', (_req, res) => res.send('<html><body>Dashboard</body></html>'));
 
-  const server = app.listen(0);
+  const server = await new Promise<any>((resolve) => {
+    const s = app.listen(0, () => resolve(s));
+  });
   const addr = server.address() as any;
   const base = `http://127.0.0.1:${addr.port}`;
 

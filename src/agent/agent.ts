@@ -177,7 +177,12 @@ export class ChainPayAgent {
       context
     );
 
-    const selectedService = services[0]; // Use first match, AI reasoning logged
+    // Use AI-selected service if it returned a valid serviceId, otherwise best-rated
+    let selectedService = services[0];
+    if (decision.params.serviceId) {
+      const aiPick = services.find(s => s.id === decision.params.serviceId || s.id.startsWith(decision.params.serviceId));
+      if (aiPick) selectedService = aiPick;
+    }
     if (!selectedService) return 'No suitable service found.';
 
     // Create escrow
@@ -205,6 +210,20 @@ export class ChainPayAgent {
       `Escrow created. Funds will be held until delivery is validated.`;
   }
 
+  /**
+   * Fund an escrow by verifying the buyer has sufficient USDT balance.
+   *
+   * Escrow model: Self-custodial hold. Funds remain in the buyer's WDK wallet
+   * but are tracked as "locked" by the escrow engine. The agent will not spend
+   * locked funds on other operations (subscriptions, yield, etc.) because
+   * getTotalEscrowed() is subtracted from available balance in all decisions.
+   *
+   * On release, the agent sends USDT directly to the seller.
+   * On refund, the lock is simply removed (funds were never moved).
+   *
+   * This avoids the gas cost and smart contract complexity of on-chain escrow
+   * while maintaining correctness through the agent's internal accounting.
+   */
   async fundEscrow(escrowId: string): Promise<string> {
     const escrow = this.escrowEngine.get(escrowId);
     if (!escrow) return `Escrow not found: ${escrowId}`;
@@ -212,19 +231,33 @@ export class ChainPayAgent {
     try {
       const account = this.walletManager.getAccount(escrow.chain);
       const config = getChainConfig(escrow.chain);
-      const amount = BigInt(Math.floor(parseFloat(escrow.amountUsdt) * 10 ** config.usdtDecimals));
+      const requiredAmount = BigInt(Math.floor(parseFloat(escrow.amountUsdt) * 10 ** config.usdtDecimals));
 
-      // Send USDT to the agent's own escrow address (self-custody)
-      const result = await account.sendTransaction({
-        to: escrow.buyerAddress, // Funds stay in agent's wallet, tracked by escrow engine
-        amount,
-        token: config.usdtAddress,
+      // Verify buyer has sufficient balance to cover the escrow
+      let balance = BigInt(0);
+      if (config.usdtAddress) {
+        const bal = await account.getTokenBalance(config.usdtAddress);
+        balance = BigInt(bal?.toString() || '0');
+      }
+
+      const alreadyEscrowed = BigInt(
+        Math.floor(parseFloat(this.escrowEngine.getTotalEscrowed()) * 10 ** config.usdtDecimals)
+      );
+      const available = balance - alreadyEscrowed;
+
+      if (available < requiredAmount) {
+        return `Insufficient balance to fund escrow. Need ${escrow.amountUsdt} USDT, available: ${(Number(available) / 10 ** config.usdtDecimals).toFixed(2)} USDT (${(Number(balance) / 10 ** config.usdtDecimals).toFixed(2)} total - ${this.escrowEngine.getTotalEscrowed()} escrowed)`;
+      }
+
+      // Mark as funded — funds are held in buyer's wallet, tracked by escrow engine
+      this.escrowEngine.fund(escrowId, `hold-verified-${Date.now()}`);
+      this.log('fund_escrow', `Escrow ${escrowId} funded (balance hold verified)`, {
+        escrowId,
+        amount: escrow.amountUsdt,
+        balanceVerified: true,
       });
 
-      this.escrowEngine.fund(escrowId, result.hash);
-      this.log('fund_escrow', `Funded escrow ${escrowId}`, { escrowId, txHash: result.hash });
-
-      return `Escrow funded!\n  TX: ${result.hash}\n  Status: funded`;
+      return `Escrow funded!\n  Amount: ${escrow.amountUsdt} USDT (held in wallet)\n  Status: funded\n  Note: Funds held in self-custodial wallet. Released to seller on delivery validation.`;
     } catch (error: any) {
       return `Failed to fund escrow: ${error.message}`;
     }

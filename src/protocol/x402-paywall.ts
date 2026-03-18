@@ -72,9 +72,29 @@ export class X402PaywallManager {
       const paymentTxHash = req.headers['x-payment-txhash'] as string | undefined;
 
       if (paymentProof && paymentTxHash) {
-        // Verify payment
+        // Verify payment record exists and matches route requirements
         const record = this.paymentRecords.get(paymentTxHash);
         if (record && !record.used) {
+          // Verify amount covers the route price
+          const paidAmount = parseFloat(record.amount);
+          const requiredAmount = parseFloat(route.priceUsdt);
+          if (paidAmount < requiredAmount) {
+            res.status(402).json({
+              error: 'Insufficient payment',
+              paid: record.amount,
+              required: route.priceUsdt,
+            });
+            return;
+          }
+          // Verify chain matches
+          if (record.chain !== route.chain) {
+            res.status(402).json({
+              error: 'Payment on wrong chain',
+              paid_chain: record.chain,
+              required_chain: route.chain,
+            });
+            return;
+          }
           record.used = true;
           // Payment verified — serve the resource
           route.handler(req, res);

@@ -122,7 +122,8 @@ export class EscrowEngine {
     escrow.updatedAt = new Date();
 
     if (result.approved && result.score >= 60) {
-      escrow.status = 'released';
+      // Status stays 'validating' — caller must call markReleased() after on-chain tx
+      escrow.status = 'validating';
       return { escrow, approved: true };
     } else {
       escrow.status = 'disputed';

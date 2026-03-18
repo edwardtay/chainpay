@@ -1,5 +1,32 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { ChainPayAgent } from '../agent/agent';
+
+/**
+ * Authentication middleware for wallet-moving endpoints.
+ * Requires X-API-Key header matching the AGENT_API_KEY env var.
+ * If no AGENT_API_KEY is set, all write endpoints are blocked in production
+ * and allowed only when NETWORK_MODE=testnet.
+ */
+function requireAuth(req: Request, res: Response, next: NextFunction): void {
+  const apiKey = process.env.AGENT_API_KEY;
+  const isTestnet = process.env.NETWORK_MODE === 'testnet';
+
+  // If no API key configured: allow in testnet, block in production
+  if (!apiKey) {
+    if (isTestnet) { next(); return; }
+    res.status(403).json({
+      error: 'AGENT_API_KEY not configured. Set it in .env to enable wallet operations.',
+    });
+    return;
+  }
+
+  const provided = req.headers['x-api-key'] as string | undefined;
+  if (provided !== apiKey) {
+    res.status(401).json({ error: 'Invalid or missing X-API-Key header.' });
+    return;
+  }
+  next();
+}
 
 export function createRouter(agent: ChainPayAgent): Router {
   const router = Router();
@@ -97,14 +124,14 @@ export function createRouter(agent: ChainPayAgent): Router {
     res.json({ escrow });
   });
 
-  router.post('/escrows/:id/fund', async (req: Request, res: Response) => {
+  router.post('/escrows/:id/fund', requireAuth, async (req: Request, res: Response) => {
     try {
       const result = await agent.fundEscrow(req.params.id as string);
       res.json({ result });
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
-  router.post('/escrows/:id/deliver', async (req: Request, res: Response) => {
+  router.post('/escrows/:id/deliver', requireAuth, async (req: Request, res: Response) => {
     try {
       const { deliverable } = req.body;
       const result = await agent.submitDeliverable(req.params.id as string, deliverable);
@@ -117,13 +144,14 @@ export function createRouter(agent: ChainPayAgent): Router {
     res.json({ subscriptions: subs.getAll() });
   });
 
-  router.post('/subscriptions/:id/cancel', (req: Request, res: Response) => {
+  router.post('/subscriptions/:id/cancel', requireAuth, (req: Request, res: Response) => {
     subs.cancel(req.params.id as string);
     res.json({ status: 'cancelled' });
   });
 
   // Agent chat (natural language)
-  router.post('/chat', async (req: Request, res: Response) => {
+  // Chat can trigger wallet operations — requires auth
+  router.post('/chat', requireAuth, async (req: Request, res: Response) => {
     try {
       const { message } = req.body;
       if (!message) { res.status(400).json({ error: 'Missing message' }); return; }
@@ -181,14 +209,14 @@ export function createRouter(agent: ChainPayAgent): Router {
     res.json({ events: auto.getEvents() });
   });
 
-  router.post('/autonomous/start', async (_req: Request, res: Response) => {
+  router.post('/autonomous/start', requireAuth, async (_req: Request, res: Response) => {
     try {
       await agent.startAutonomousLoop();
       res.json({ status: 'started', ...agent.getAutonomous().getStatus() });
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
-  router.post('/autonomous/stop', (_req: Request, res: Response) => {
+  router.post('/autonomous/stop', requireAuth, (_req: Request, res: Response) => {
     agent.stopAutonomousLoop();
     res.json({ status: 'stopped' });
   });
