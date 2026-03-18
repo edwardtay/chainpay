@@ -1,0 +1,49 @@
+{
+  "name": "chainpay",
+  "version": "1.0.0",
+  "description": "Agent-to-Agent Commerce Protocol powered by Tether WDK",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "agent": "ts-node src/agent/cli.ts",
+    "test": "ts-node src/test-e2e.ts",
+    "wallet": "ts-node src/generate-wallet.ts",
+    "check-balance": "ts-node src/check-balance.ts",
+    "demo": "ts-node src/demo.ts"
+  },
+  "keywords": [
+    "tether",
+    "wdk",
+    "payments",
+    "cross-chain",
+    "ai-agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.79.0",
+    "@tetherto/wdk": "^1.0.0-beta.6",
+    "@tetherto/wdk-protocol-bridge-usdt0-evm": "^1.0.0-beta.3",
+    "@tetherto/wdk-protocol-lending-aave-evm": "^1.0.0-beta.3",
+    "@tetherto/wdk-protocol-swap-velora-evm": "^1.0.0-beta.4",
+    "@tetherto/wdk-wallet-evm": "^1.0.0-beta.8",
+    "@tetherto/wdk-wallet-evm-erc-4337": "^1.0.0-beta.5",
+    "@tetherto/wdk-wallet-solana": "^1.0.0-beta.5",
+    "@tetherto/wdk-wallet-ton": "^1.0.0-beta.7",
+    "@tetherto/wdk-wallet-tron": "^1.0.0-beta.4",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "@types/uuid": "^10.0.0",
+    "@x402/core": "^2.7.0",
+    "@x402/evm": "^2.7.0",
+    "@x402/express": "^2.7.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "uuid": "^13.0.0"
+  }
+}
