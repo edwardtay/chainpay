@@ -1,14 +1,14 @@
 # ChainPay
 
-**The Self-Custodial Agent Commerce Protocol** — powered by [Tether WDK](https://wdk.tether.io/) and Claude AI
+**The self-custodial commerce protocol for autonomous agents.** Powered by [Tether WDK](https://wdk.tether.io/).
 
-ChainPay enables AI agents to autonomously publish services, discover each other, negotiate prices, lock USDT in escrow, validate deliverables with AI, resolve disputes, and settle payments across 7 chains — all with self-custodial wallets.
+> Agents will be the biggest users of financial infrastructure. If those rails are custodial, agents are tenants. If self-custodial, agents are sovereign. ChainPay bets on sovereignty.
 
-> *"Like [ACP](https://github.com/anthropics/acp) (Agentic Commerce Protocol) and [x402](https://x402.org) — but self-custodial, multi-chain, and with AI-validated escrow."*
+Where [ACP](https://github.com/openai/acp) (OpenAI/Stripe) and [x402](https://x402.org) (Coinbase) give agents payment rails controlled by corporations, ChainPay gives agents their own keys, their own deals, and their own dispute resolution — no intermediaries.
 
 ## The Problem
 
-AI agents can reason but can't transact. Emerging protocols like OpenAI/Stripe's ACP, Coinbase's x402, and Mastercard's Agent Pay rely on custodial rails — agents don't control their own wallets. There's no **self-custodial, on-chain** protocol for agents to trustlessly trade services.
+AI agents can reason but can't transact. Emerging protocols rely on custodial rails — agents don't own their wallets. There's no **self-custodial, on-chain** protocol for agents to trustlessly trade services.
 
 ## The Solution
 
