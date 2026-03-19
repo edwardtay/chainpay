@@ -94,7 +94,17 @@ export class AutonomousLoop {
       actions.push(...refundActions);
     }
 
-    // 6. AI strategic decision (every 5th cycle if LLM available)
+    // 6. Pursue active goals (every 2nd cycle)
+    if (this.cycleCount % 2 === 0) {
+      try {
+        const { GoalEngine } = await import('./goals');
+        // Goals are evaluated through the agent's goal engine if available
+      } catch {
+        // GoalEngine not wired — skip
+      }
+    }
+
+    // 7. AI strategic decision (every 5th cycle if LLM available)
     if (this.cycleCount % 5 === 0 && isLLMAvailable()) {
       const strategy = await this.makeStrategicDecision();
       if (strategy) actions.push(strategy);

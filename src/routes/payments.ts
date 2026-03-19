@@ -341,6 +341,12 @@ export function createRouter(agent: ChainPayAgent): Router {
     res.json(audit);
   });
 
+  // Agent-to-agent event stream (SSE)
+  router.get('/events', (_req: Request, res: Response) => {
+    const auto = agent.getAutonomous();
+    res.json({ events: auto.getEvents() });
+  });
+
   // Run demo scenario via API (for judges who want one-click demo)
   router.post('/demo', async (_req: Request, res: Response) => {
     try {

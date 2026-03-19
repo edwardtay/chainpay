@@ -127,7 +127,7 @@ async function main() {
     console.log(`  ${s.name} — ${s.priceUsdt} USDT by ${s.agentId}`);
   }
 
-  const cheapServices = buyerRegistry.find({ maxPrice: 1.0 });
+  const cheapServices = sellerRegistry.find({ maxPrice: 1.0 });
   console.log(`\nServices under 1 USDT: ${cheapServices.length}`);
   await sleep(DELAY);
 

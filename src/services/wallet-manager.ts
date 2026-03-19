@@ -4,7 +4,7 @@ import WalletManagerEvmErc4337 from '@tetherto/wdk-wallet-evm-erc-4337';
 import WalletManagerTon from '@tetherto/wdk-wallet-ton';
 import WalletManagerTron from '@tetherto/wdk-wallet-tron';
 import WalletManagerSolana from '@tetherto/wdk-wallet-solana';
-import { CHAINS, ChainConfig } from '../utils/chains';
+import { CHAINS } from '../utils/chains';
 
 export class MultiChainWalletManager {
   private wdk: any;
