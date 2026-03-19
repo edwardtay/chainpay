@@ -138,6 +138,7 @@ Intent types:
 - escrow_status: Check escrow status (params: escrowId?)
 - start_subscription: Subscribe to a service (params: serviceId, interval)
 - stop_subscription: Cancel subscription (params: subscriptionId)
+- confirm_payment: Confirm a pending payment (params: {})
 - optimize: Let agent optimize yield/positions (params: {})
 - help: Show help (params: {})
 - unknown: Can't parse (params: {originalMessage})`,
@@ -156,6 +157,9 @@ Intent types:
 function offlineParseIntent(msg: string): { intent: string; params: Record<string, any> } {
   const lower = msg.toLowerCase().trim();
 
+  if (lower === 'confirm' || lower === 'yes' || lower === 'confirm payment') {
+    return { intent: 'confirm_payment', params: {} };
+  }
   if (lower.includes('balance')) return { intent: 'check_balance', params: {} };
   if (lower.includes('help')) return { intent: 'help', params: {} };
   if (lower.includes('escrow')) return { intent: 'escrow_status', params: {} };

@@ -40,6 +40,7 @@ export class ChainPayAgent {
   private autonomous: AutonomousLoop;
   private actionLog: AgentAction[] = [];
   private initialized = false;
+  private pendingPayment: { to: string; amount: string; chain: string } | null = null;
 
   constructor(seedPhrase: string, agentId?: string) {
     this.agentId = agentId || uuidv4();
@@ -88,7 +89,9 @@ export class ChainPayAgent {
       case 'check_balance':
         return this.handleBalances(intent.params.chain);
       case 'send_payment':
-        return this.handleSendPayment(intent.params);
+        return this.handleSendPaymentConfirmation(intent.params);
+      case 'confirm_payment':
+        return this.handleConfirmPayment();
       case 'list_services':
         return this.handleListServices(intent.params);
       case 'escrow_status':
@@ -354,18 +357,39 @@ export class ChainPayAgent {
 
   // ==================== PAYMENTS & WALLETS ====================
 
+  private formatNativeBalance(rawNative: string, config: { type: string; nativeSymbol: string }): string {
+    // EVM chains return native balance in wei (1e18), others return raw units
+    if (config.type === 'evm') {
+      const val = Number(BigInt(rawNative || '0')) / 1e18;
+      return val.toFixed(6);
+    }
+    return rawNative;
+  }
+
+  private formatUsdtBalance(rawUsdt: string, config: { usdtDecimals: number }): string {
+    const val = Number(BigInt(rawUsdt || '0')) / 10 ** config.usdtDecimals;
+    return val.toFixed(2);
+  }
+
   private async handleBalances(chain?: string): Promise<string> {
     if (chain) {
       const bal = await this.walletManager.getBalance(chain);
       const config = CHAINS[chain.toLowerCase()];
-      return `${config?.name || chain}: ${bal.native} ${config?.nativeSymbol} | ${bal.usdt} USDT`;
+      if (!config) return `${chain}: ${bal.native} native | ${bal.usdt} USDT`;
+      const nativeFormatted = this.formatNativeBalance(bal.native, config);
+      const usdtFormatted = this.formatUsdtBalance(bal.usdt, config);
+      return `${config.name}: ${nativeFormatted} ${config.nativeSymbol} | ${usdtFormatted} USDT`;
     }
 
     const balances = await this.walletManager.getAllBalances();
     const lines = ['Wallet Balances:'];
     for (const [ch, bal] of Object.entries(balances)) {
       const config = CHAINS[ch];
-      if (config) lines.push(`  ${config.name}: ${bal.native} ${config.nativeSymbol} | ${bal.usdt} USDT`);
+      if (config) {
+        const nativeFormatted = this.formatNativeBalance(bal.native, config);
+        const usdtFormatted = this.formatUsdtBalance(bal.usdt, config);
+        lines.push(`  ${config.name}: ${nativeFormatted} ${config.nativeSymbol} | ${usdtFormatted} USDT`);
+      }
     }
 
     const escrowed = this.escrowEngine.getTotalEscrowed();
@@ -374,6 +398,34 @@ export class ChainPayAgent {
     lines.push(`  Monthly subscriptions: ${monthlySpend.toFixed(2)} USDT/month`);
 
     return lines.join('\n');
+  }
+
+  private async handleSendPaymentConfirmation(params: Record<string, any>): Promise<string> {
+    const chain = params.chain || 'polygon';
+    const config = getChainConfig(chain);
+    const amount = params.amount || '0';
+
+    // Store the pending payment for confirmation
+    this.pendingPayment = { to: params.to, amount, chain };
+
+    this.log('payment_quote', `Payment quote generated`, { to: params.to, amount, chain });
+
+    return `Payment Quote:\n` +
+      `  Recipient: ${params.to}\n` +
+      `  Amount: ${amount} USDT\n` +
+      `  Chain: ${config.name}\n` +
+      `  Estimated fee: ~0.01 ${config.nativeSymbol}\n\n` +
+      `Type "confirm" to execute this payment, or anything else to cancel.`;
+  }
+
+  private async handleConfirmPayment(): Promise<string> {
+    if (!this.pendingPayment) {
+      return 'No pending payment to confirm. Use "send" to initiate a payment first.';
+    }
+
+    const { to, amount, chain } = this.pendingPayment;
+    this.pendingPayment = null;
+    return this.handleSendPayment({ to, amount, chain });
   }
 
   private async handleSendPayment(params: Record<string, any>): Promise<string> {
@@ -456,7 +508,7 @@ export class ChainPayAgent {
   }
 
   async startAutonomousLoop(intervalMs: number = 30000): Promise<void> {
-    await this.autonomous.start();
+    await this.autonomous.start(intervalMs);
     this.log('autonomous_start', 'Autonomous agent brain started', { intervalMs });
   }
 

@@ -118,13 +118,10 @@ async function main() {
   // ================================================================
   step(3, 'Agent B discovers services via marketplace search');
 
-  // Share the registry (in production this would be networked)
-  const buyerRegistry = agentB.getServiceRegistry();
-  for (const s of registry.getAll()) {
-    buyerRegistry.publish({ ...s }); // Simulate discovery
-  }
+  // Use agentA's registry directly for discovery (simulates networked registry)
+  const sellerRegistry = agentA.getServiceRegistry();
 
-  const aiServices = buyerRegistry.find({ category: 'ai' });
+  const aiServices = sellerRegistry.find({ category: 'ai' });
   console.log(`Found ${aiServices.length} AI services:`);
   for (const s of aiServices) {
     console.log(`  ${s.name} — ${s.priceUsdt} USDT by ${s.agentId}`);

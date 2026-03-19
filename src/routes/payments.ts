@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { ChainPayAgent } from '../agent/agent';
+import { CHAINS } from '../utils/chains';
 
 /**
  * Authentication middleware for wallet-moving endpoints.
@@ -77,11 +78,25 @@ export function createRouter(agent: ChainPayAgent): Router {
   router.post('/services', async (req: Request, res: Response) => {
     try {
       const { name, description, priceUsdt, chain, category, acceptanceCriteria } = req.body;
-      const address = await wallets.getAddress(chain || 'polygon');
+
+      // Validate required fields
+      if (!name || typeof name !== 'string' || name.trim().length === 0) {
+        res.status(400).json({ error: 'name is required and must be a non-empty string' }); return;
+      }
+      const price = parseFloat(priceUsdt);
+      if (!priceUsdt || isNaN(price) || price <= 0) {
+        res.status(400).json({ error: 'priceUsdt is required and must be a positive number' }); return;
+      }
+      const resolvedChain = chain || 'polygon';
+      if (!CHAINS[resolvedChain.toLowerCase()]) {
+        res.status(400).json({ error: `chain must be one of: ${Object.keys(CHAINS).join(', ')}` }); return;
+      }
+
+      const address = await wallets.getAddress(resolvedChain);
       const service = services.publish({
         agentId: agent.agentId,
         agentAddress: address,
-        name, description, priceUsdt, chain: chain || 'polygon', category, acceptanceCriteria,
+        name, description, priceUsdt, chain: resolvedChain, category, acceptanceCriteria,
       });
       res.status(201).json({ service });
     } catch (e: any) { res.status(500).json({ error: e.message }); }
@@ -99,6 +114,9 @@ export function createRouter(agent: ChainPayAgent): Router {
   router.post('/escrows', async (req: Request, res: Response) => {
     try {
       const { serviceId } = req.body;
+      if (!serviceId || typeof serviceId !== 'string' || serviceId.trim().length === 0) {
+        res.status(400).json({ error: 'serviceId is required and must be a non-empty string' }); return;
+      }
       const service = services.get(serviceId);
       if (!service) { res.status(404).json({ error: 'Service not found' }); return; }
 
@@ -263,6 +281,9 @@ export function createRouter(agent: ChainPayAgent): Router {
   router.post('/disputes/:id/message', (req: Request, res: Response) => {
     try {
       const { role, agentId, content } = req.body;
+      if (!content || typeof content !== 'string' || content.trim().length === 0) {
+        res.status(400).json({ error: 'content is required and must be a non-empty string' }); return;
+      }
       const message = disputes.addMessage(req.params.id as string, role, agentId, content);
       res.status(201).json({ message });
     } catch (e: any) { res.status(500).json({ error: e.message }); }

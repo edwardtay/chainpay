@@ -35,8 +35,11 @@ export class AutonomousLoop {
     private intervalMs: number = 30000
   ) {}
 
-  async start(): Promise<void> {
+  async start(intervalMs?: number): Promise<void> {
     if (this.running) return;
+    if (intervalMs !== undefined) {
+      this.intervalMs = intervalMs;
+    }
     this.running = true;
 
     this.emit('decision', 'Autonomous loop started', { intervalMs: this.intervalMs });
@@ -200,7 +203,9 @@ export class AutonomousLoop {
             currentBalance: bal.usdt,
           });
 
-          // Auto-match to pending escrows and fund them
+          // Auto-match to pending escrows and fund them.
+          // Match by both chain AND amount (within 10% tolerance) to avoid
+          // funding the wrong escrow when multiple are pending on the same chain.
           const pendingEscrows = this.agent.getEscrowEngine()
             .getAll()
             .filter(e => e.status === 'created' && e.chain === chain);
@@ -208,7 +213,10 @@ export class AutonomousLoop {
           for (const pending of pendingEscrows) {
             const pendingAmount = parseFloat(pending.amountUsdt);
             const incomingAmount = parseFloat(diffFormatted);
-            if (incomingAmount >= pendingAmount) {
+            // Require the incoming amount to be within 10% tolerance of the escrow amount
+            const lowerBound = pendingAmount * 0.9;
+            const upperBound = pendingAmount * 1.1;
+            if (incomingAmount >= lowerBound && incomingAmount <= upperBound) {
               try {
                 this.agent.getEscrowEngine().fund(pending.id, `auto-funded-${Date.now()}`);
                 const fundMsg = `Auto-funded escrow ${pending.id} (${pending.amountUsdt} USDT) from incoming payment`;
