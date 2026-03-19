@@ -76,12 +76,13 @@ export async function createAgent(config: ChainPayConfig): Promise<ChainPayClien
     goals,
 
     publishService(params) {
-      const walletManager = agent.getWalletManager();
       const chain = params.chain || 'polygon';
-      // Sync publish — address will be fetched lazily
+      // Resolve address synchronously from cached accounts
+      let address = '';
+      try { address = agent.getWalletManager().getAccount(chain).address || ''; } catch {}
       const service = agent.getServiceRegistry().publish({
         agentId: agent.agentId,
-        agentAddress: '', // Will be resolved on first interaction
+        agentAddress: address,
         name: params.name,
         description: params.description || '',
         priceUsdt: params.priceUsdt,

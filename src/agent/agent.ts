@@ -1,5 +1,5 @@
 import { MultiChainWalletManager } from '../services/wallet-manager';
-import { ServiceRegistry, AgentService } from '../protocol/service-registry';
+import { ServiceRegistry } from '../protocol/service-registry';
 import { EscrowEngine, Escrow } from '../protocol/escrow';
 import { SubscriptionEngine } from '../protocol/subscriptions';
 import { NegotiationEngine } from '../protocol/negotiation';
