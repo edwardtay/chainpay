@@ -8,18 +8,19 @@ export function getDashboardHTML(): string {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #fafafa; --card: #fff; --border: #e5e7eb; --border2: #f3f4f6;
+      --bg: #f9fafb; --card: #fff; --border: #e5e7eb; --border2: #f3f4f6;
       --text: #111827; --text2: #6b7280; --text3: #9ca3af;
-      --accent: #10b981; --accent2: #059669; --blue: #3b82f6; --red: #ef4444; --purple: #8b5cf6; --orange: #f59e0b;
-      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-      --shadow2: 0 4px 6px rgba(0,0,0,.05), 0 2px 4px rgba(0,0,0,.03);
+      --accent: #111827; --accent2: #374151; --blue: #4b5563; --red: #b91c1c; --purple: #6b7280; --orange: #92400e;
+      --shadow: 0 1px 2px rgba(0,0,0,.05);
+      --shadow2: 0 2px 4px rgba(0,0,0,.04);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; -webkit-font-smoothing: antialiased; }
 
-    nav { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    nav { background: #fff; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 10; }
+    .nav-inner { max-width: 1120px; width: 100%; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
     .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-    .logo em { font-style: normal; color: var(--accent); }
+    .logo em { font-style: normal; color: #059669; }
     .pills { display: flex; gap: 6px; }
     .pill { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 500; background: var(--border2); color: var(--text2); }
 
@@ -28,14 +29,14 @@ export function getDashboardHTML(): string {
     .kpi { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
     .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow); }
     .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: var(--text3); font-weight: 600; }
-    .kpi-val { font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 4px; line-height: 1; }
+    .kpi-val { font-size: 28px; font-weight: 700; color: #111827; margin-top: 4px; line-height: 1; }
     .kpi-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
 
     .toolbar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
     .btn { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: all .12s; box-shadow: var(--shadow); }
     .btn:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-go { background: var(--accent); border-color: var(--accent2); color: #fff; }
-    .btn-go:hover { background: var(--accent2); }
+    .btn-go { background: #111827; border-color: #111827; color: #fff; }
+    .btn-go:hover { background: #374151; border-color: #374151; }
     .btn-s { padding: 5px 10px; font-size: 12px; box-shadow: none; }
 
     .grid { display: grid; gap: 16px; margin-bottom: 20px; }
@@ -49,10 +50,10 @@ export function getDashboardHTML(): string {
     .card-b.scroll { max-height: 260px; overflow-y: auto; }
 
     .tag { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600; }
-    .tag-g { background: #d1fae5; color: #065f46; }
-    .tag-r { background: #fee2e2; color: #991b1b; }
-    .tag-b { background: #dbeafe; color: #1e40af; }
-    .tag-p { background: #ede9fe; color: #5b21b6; }
+    .tag-g { background: #f0fdf4; color: #166534; }
+    .tag-r { background: #fef2f2; color: #991b1b; }
+    .tag-b { background: #f0f9ff; color: #1e40af; }
+    .tag-p { background: #f5f3ff; color: #5b21b6; }
 
     .chat-row { display: flex; gap: 8px; }
     .chat-row input { flex:1; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-family: inherit; outline: none; background: var(--bg); }
@@ -61,17 +62,17 @@ export function getDashboardHTML(): string {
 
     .flow-bar { display: flex; align-items: center; justify-content: center; gap: 3px; padding: 14px 16px; flex-wrap: wrap; }
     .fn { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; }
-    .fn-a { background: #eff6ff; color: var(--blue); }
-    .fn-p { background: #ecfdf5; color: var(--accent2); }
-    .fn-d { background: #fef2f2; color: var(--red); }
-    .fn-ai { background: #f5f3ff; color: var(--purple); }
+    .fn-a { background: #f3f4f6; color: #374151; }
+    .fn-p { background: #f0fdf4; color: #166534; }
+    .fn-d { background: #fef2f2; color: #991b1b; }
+    .fn-ai { background: #f5f3ff; color: #5b21b6; }
     .fa { color: var(--text3); font-size: 14px; margin: 0 2px; }
 
     .row { padding: 10px 16px; border-bottom: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; }
     .row:last-child { border: none; }
     .row-t { font-weight: 500; font-size: 13px; }
     .row-m { font-size: 11px; color: var(--text3); }
-    .row-p { font-family: 'SF Mono',monospace; font-weight: 600; color: var(--accent); font-size: 13px; }
+    .row-p { font-family: 'SF Mono',monospace; font-weight: 600; color: #111827; font-size: 13px; }
 
     .ev { padding: 8px 12px; border-left: 3px solid var(--border); margin-bottom: 4px; border-radius: 0 6px 6px 0; font-size: 12px; }
     .ev-g { border-color: var(--accent); background: #f0fdf4; }
@@ -94,37 +95,33 @@ export function getDashboardHTML(): string {
 </head>
 <body>
   <nav>
-    <div class="logo">Chain<em>Pay</em></div>
-    <div class="pills">
-      <span class="pill">Tether WDK</span>
-      <span class="pill">x402</span>
-      <span class="pill">Claude AI</span>
-      <span class="pill">7 Chains</span>
+    <div class="nav-inner">
+      <div class="logo">Chain<em>Pay</em></div>
+      <div class="pills">
+        <span class="pill">Tether WDK</span>
+        <span class="pill">x402</span>
+        <span class="pill">Claude AI</span>
+        <span class="pill">7 Chains</span>
+      </div>
     </div>
   </nav>
 
-  <section style="background:#fff;border-bottom:1px solid var(--border);padding:48px 20px;text-align:center">
-    <div style="max-width:640px;margin:0 auto">
-      <h1 style="font-size:36px;font-weight:700;letter-spacing:-1px;line-height:1.2">The commerce protocol<br>for <span style="color:var(--accent)">autonomous agents</span></h1>
-      <p style="color:var(--text2);margin:16px 0 24px;font-size:15px;line-height:1.6">Agents publish services, negotiate prices, escrow USDT, validate deliverables with AI, and settle payments across 7 chains. Self-custodial. No intermediaries.</p>
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-        <a href="#app" class="btn btn-go" style="text-decoration:none;padding:10px 24px">Open App</a>
-        <a href="https://github.com/edwardtay/chainpay" target="_blank" class="btn" style="text-decoration:none;padding:10px 24px">GitHub</a>
+  <section style="background:#fff;border-bottom:1px solid var(--border);padding:48px 20px">
+    <div style="max-width:1120px;margin:0 auto">
+      <div style="max-width:560px">
+        <h1 style="font-size:32px;font-weight:700;letter-spacing:-0.8px;line-height:1.2">The commerce protocol for <span style="color:#059669">autonomous agents</span></h1>
+<!-- accent used only here -->
+        <p style="color:var(--text2);margin:14px 0 20px;font-size:15px;line-height:1.6">Agents publish services, negotiate prices, escrow USDT, validate deliverables with AI, and settle across 7 chains. Self-custodial. No intermediaries.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="#app" class="btn btn-go" style="text-decoration:none;padding:10px 24px">Open App</a>
+          <a href="https://github.com/edwardtay/chainpay" target="_blank" class="btn" style="text-decoration:none;padding:10px 24px">GitHub</a>
+        </div>
       </div>
-      <div style="display:flex;gap:20px;justify-content:center;margin-top:32px;color:var(--text3);font-size:12px;font-weight:500">
-        <span>9 WDK Packages</span>
-        <span>6 Payment Protocols</span>
-        <span>200 Tests</span>
-        <span>7 Chains</span>
+      <div style="display:flex;gap:24px;margin-top:36px">
+        <div style="flex:1;padding:16px 20px;background:var(--bg);border-radius:10px"><div style="font-weight:600;margin-bottom:4px">Escrow + AI Validation</div><div style="font-size:12px;color:var(--text2)">Funds locked until Claude AI approves delivery</div></div>
+        <div style="flex:1;padding:16px 20px;background:var(--bg);border-radius:10px"><div style="font-weight:600;margin-bottom:4px">x402 Micropayments</div><div style="font-size:12px;color:var(--text2)">HTTP-native pay-per-API-call</div></div>
+        <div style="flex:1;padding:16px 20px;background:var(--bg);border-radius:10px"><div style="font-weight:600;margin-bottom:4px">AI Dispute Resolution</div><div style="font-size:12px;color:var(--text2)">Rejected deliverables go to AI arbitration</div></div>
       </div>
-    </div>
-  </section>
-
-  <section style="background:var(--bg);padding:32px 20px 0">
-    <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center">
-      <div style="padding:20px"><div style="font-size:24px;margin-bottom:8px">&#x1f91d;</div><div style="font-weight:600;margin-bottom:4px">Escrow + AI Validation</div><div style="font-size:12px;color:var(--text2)">Funds locked until Claude AI approves delivery quality</div></div>
-      <div style="padding:20px"><div style="font-size:24px;margin-bottom:8px">&#x1f4b1;</div><div style="font-weight:600;margin-bottom:4px">x402 Micropayments</div><div style="font-size:12px;color:var(--text2)">HTTP-native pay-per-API-call. Agents auto-pay USDT</div></div>
-      <div style="padding:20px"><div style="font-size:24px;margin-bottom:8px">&#x2696;&#xfe0f;</div><div style="font-weight:600;margin-bottom:4px">AI Dispute Resolution</div><div style="font-size:12px;color:var(--text2)">Rejected deliverables go to AI arbitration</div></div>
     </div>
   </section>
 
