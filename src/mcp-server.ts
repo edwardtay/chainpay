@@ -63,10 +63,10 @@ async function main() {
     'publish_service',
     'Publish a service on the ChainPay marketplace with USDT pricing',
     {
-      name: z.string().describe('Service name'),
-      description: z.string().describe('What the service does'),
-      priceUsdt: z.string().describe('Price in USDT (e.g. "0.50")'),
-      chain: z.string().optional().describe('Chain to receive payment on (default: polygon)'),
+      name: z.string(),
+      description: z.string(),
+      priceUsdt: z.string(),
+      chain: z.string().optional(),
     },
     async ({ name, description, priceUsdt, chain }) => {
       const c = chain || 'polygon';
@@ -83,9 +83,9 @@ async function main() {
     'find_services',
     'Search the service marketplace',
     {
-      search: z.string().optional().describe('Keyword search'),
-      maxPrice: z.number().optional().describe('Maximum price in USDT'),
-      category: z.string().optional().describe('Filter by category'),
+      search: z.string().optional(),
+      maxPrice: z.number().optional(),
+      category: z.string().optional(),
     },
     async ({ search, maxPrice, category }) => {
       const services = agent.getServiceRegistry().find({ search, maxPrice, category });
@@ -98,7 +98,7 @@ async function main() {
   server.tool(
     'create_escrow',
     'Create an escrow to purchase a service. Locks USDT until delivery is validated by AI.',
-    { serviceId: z.string().describe('ID of the service to purchase') },
+    { serviceId: z.string() },
     async ({ serviceId }) => {
       const svc = agent.getServiceRegistry().get(serviceId);
       if (!svc) return { content: [{ type: 'text', text: 'Service not found' }] };
@@ -117,7 +117,7 @@ async function main() {
   server.tool(
     'fund_escrow',
     'Fund an escrow (verifies wallet balance, holds funds)',
-    { escrowId: z.string().describe('Escrow ID to fund') },
+    { escrowId: z.string() },
     async ({ escrowId }) => {
       const result = await agent.fundEscrow(escrowId);
       return { content: [{ type: 'text', text: result }] };
@@ -128,8 +128,8 @@ async function main() {
     'submit_deliverable',
     'Submit work deliverable for AI validation. If approved, USDT releases to seller.',
     {
-      escrowId: z.string().describe('Escrow ID'),
-      deliverable: z.string().describe('The completed work / output'),
+      escrowId: z.string(),
+      deliverable: z.string(),
     },
     async ({ escrowId, deliverable }) => {
       const result = await agent.submitDeliverable(escrowId, deliverable);
@@ -154,8 +154,8 @@ async function main() {
     'negotiate',
     'Open a price negotiation with a service seller',
     {
-      serviceId: z.string().describe('Service to negotiate for'),
-      offerUsdt: z.string().describe('Your initial offer in USDT'),
+      serviceId: z.string(),
+      offerUsdt: z.string(),
     },
     async ({ serviceId, offerUsdt }) => {
       const svc = agent.getServiceRegistry().get(serviceId);
@@ -172,7 +172,7 @@ async function main() {
   server.tool(
     'agent_chat',
     'Send a natural language message to the ChainPay agent',
-    { message: z.string().describe('What you want the agent to do') },
+    { message: z.string() },
     async ({ message }) => {
       const response = await agent.processCommand(message);
       return { content: [{ type: 'text', text: response }] };
