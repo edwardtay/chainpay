@@ -15,6 +15,7 @@
     "test": "ts-node src/test-e2e.ts",
     "wallet": "ts-node src/generate-wallet.ts",
     "check-balance": "ts-node src/check-balance.ts",
+    "mcp": "ts-node src/mcp-server.ts",
     "demo": "ts-node src/demo.ts"
   },
   "keywords": [
@@ -29,6 +30,7 @@
   "type": "commonjs",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.79.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "@tetherto/wdk": "^1.0.0-beta.6",
     "@tetherto/wdk-protocol-bridge-usdt0-evm": "^1.0.0-beta.3",
     "@tetherto/wdk-protocol-lending-aave-evm": "^1.0.0-beta.3",
