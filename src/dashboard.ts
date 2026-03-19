@@ -5,318 +5,219 @@ export function getDashboardHTML(): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ChainPay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0d1117; --bg2: #161b22; --bg3: #1c2128; --border: #30363d;
-      --text: #e6edf3; --text2: #8b949e; --text3: #6e7681;
-      --blue: #58a6ff; --green: #3fb950; --red: #f85149; --orange: #d29922; --purple: #bc8cff;
+      --bg: #fafafa; --card: #fff; --border: #e5e7eb; --border2: #f3f4f6;
+      --text: #111827; --text2: #6b7280; --text3: #9ca3af;
+      --accent: #10b981; --accent2: #059669; --blue: #3b82f6; --red: #ef4444; --purple: #8b5cf6; --orange: #f59e0b;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow2: 0 4px 6px rgba(0,0,0,.05), 0 2px 4px rgba(0,0,0,.03);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
-    a { color: var(--blue); text-decoration: none; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; -webkit-font-smoothing: antialiased; }
 
-    .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 20px 0; }
-    .header-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
-    .logo { font-size: 1.4em; font-weight: 700; color: var(--text); }
-    .logo span { color: var(--green); }
-    .header-tags { display: flex; gap: 6px; }
-    .htag { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); color: var(--text2); }
-    .htag.active { border-color: var(--green); color: var(--green); }
+    nav { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo em { font-style: normal; color: var(--accent); }
+    .pills { display: flex; gap: 6px; }
+    .pill { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 500; background: var(--border2); color: var(--text2); }
 
-    .container { max-width: 1280px; margin: 0 auto; padding: 20px 24px; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 20px 60px; }
 
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
-    .stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); margin-bottom: 4px; }
-    .stat-card .value { font-size: 1.8em; font-weight: 700; color: var(--green); line-height: 1.2; }
-    .stat-card .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .kpi { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow); }
+    .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: var(--text3); font-weight: 600; }
+    .kpi-val { font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 4px; line-height: 1; }
+    .kpi-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
 
-    .actions { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .btn { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); cursor: pointer; font-size: 13px; font-family: inherit; transition: all 0.15s; }
-    .btn:hover { border-color: var(--blue); background: var(--bg3); }
-    .btn-primary { background: #238636; border-color: #2ea043; color: #fff; }
-    .btn-primary:hover { background: #2ea043; }
-    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    .toolbar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+    .btn { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: all .12s; box-shadow: var(--shadow); }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-go { background: var(--accent); border-color: var(--accent2); color: #fff; }
+    .btn-go:hover { background: var(--accent2); }
+    .btn-s { padding: 5px 10px; font-size: 12px; box-shadow: none; }
 
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .grid3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .grid { display: grid; gap: 16px; margin-bottom: 20px; }
+    .g2 { grid-template-columns: 1fr 1fr; }
+    .g73 { grid-template-columns: 7fr 3fr; }
 
-    .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .card-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .card-header h3 { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
-    .card-body { padding: 16px; }
-    .card-body.scroll { max-height: 280px; overflow-y: auto; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+    .card-h { padding: 14px 18px; border-bottom: 1px solid var(--border2); display: flex; align-items: center; justify-content: space-between; }
+    .card-h h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text2); }
+    .card-b { padding: 18px; }
+    .card-b.scroll { max-height: 260px; overflow-y: auto; }
 
-    .chat-box { display: flex; gap: 8px; }
-    .chat-box input { flex: 1; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
-    .chat-box input:focus { border-color: var(--blue); }
-    #response { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-top: 12px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.5; white-space: pre-wrap; max-height: 300px; overflow-y: auto; color: var(--text2); }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+    .tag-g { background: #d1fae5; color: #065f46; }
+    .tag-r { background: #fee2e2; color: #991b1b; }
+    .tag-b { background: #dbeafe; color: #1e40af; }
+    .tag-p { background: #ede9fe; color: #5b21b6; }
 
-    .flow { display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; padding: 16px; }
-    .flow-node { padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; }
-    .flow-node.action { background: #1f6feb22; color: var(--blue); border: 1px solid #1f6feb44; }
-    .flow-node.payment { background: #23863622; color: var(--green); border: 1px solid #23863644; }
-    .flow-node.danger { background: #f8514922; color: var(--red); border: 1px solid #f8514944; }
-    .flow-node.ai { background: #bc8cff22; color: var(--purple); border: 1px solid #bc8cff44; }
-    .flow-arr { color: var(--text3); font-size: 16px; }
+    .chat-row { display: flex; gap: 8px; }
+    .chat-row input { flex:1; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-family: inherit; outline: none; background: var(--bg); }
+    .chat-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #10b98122; }
+    #out { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 12px; font-family: 'SF Mono','Fira Code',monospace; font-size: 12px; line-height: 1.6; white-space: pre-wrap; max-height: 280px; overflow-y: auto; color: var(--text2); }
 
-    .svc-item { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .svc-item:last-child { border-bottom: none; }
-    .svc-name { font-weight: 500; color: var(--text); }
-    .svc-price { font-family: 'SF Mono', monospace; color: var(--green); font-size: 13px; }
-    .svc-meta { font-size: 11px; color: var(--text3); }
+    .flow-bar { display: flex; align-items: center; justify-content: center; gap: 3px; padding: 14px 16px; flex-wrap: wrap; }
+    .fn { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+    .fn-a { background: #eff6ff; color: var(--blue); }
+    .fn-p { background: #ecfdf5; color: var(--accent2); }
+    .fn-d { background: #fef2f2; color: var(--red); }
+    .fn-ai { background: #f5f3ff; color: var(--purple); }
+    .fa { color: var(--text3); font-size: 14px; margin: 0 2px; }
 
-    .event { padding: 8px 12px; border-left: 3px solid var(--border); margin-bottom: 6px; font-size: 12px; }
-    .event .ev-type { color: var(--blue); font-weight: 600; font-size: 11px; text-transform: uppercase; }
-    .event .ev-desc { color: var(--text2); margin-top: 2px; }
-    .event .ev-ai { color: var(--orange); font-size: 11px; margin-top: 2px; }
-    .event.ev-green { border-color: var(--green); }
-    .event.ev-red { border-color: var(--red); }
-    .event.ev-purple { border-color: var(--purple); }
+    .row { padding: 10px 16px; border-bottom: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; }
+    .row:last-child { border: none; }
+    .row-t { font-weight: 500; font-size: 13px; }
+    .row-m { font-size: 11px; color: var(--text3); }
+    .row-p { font-family: 'SF Mono',monospace; font-weight: 600; color: var(--accent); font-size: 13px; }
 
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 11px; color: var(--text2); text-transform: uppercase; margin-bottom: 4px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px; font-family: inherit; }
-    .form-group textarea { min-height: 50px; resize: vertical; }
+    .ev { padding: 8px 12px; border-left: 3px solid var(--border); margin-bottom: 4px; border-radius: 0 6px 6px 0; font-size: 12px; }
+    .ev-g { border-color: var(--accent); background: #f0fdf4; }
+    .ev-r { border-color: var(--red); background: #fef2f2; }
+    .ev-p { border-color: var(--purple); background: #faf5ff; }
+    .ev b { font-size: 10px; text-transform: uppercase; letter-spacing: .3px; }
 
-    pre.api-ref { font-family: 'SF Mono', monospace; font-size: 11px; color: var(--text3); line-height: 1.6; }
+    .fg { margin-bottom: 10px; }
+    .fg label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .fg input, .fg select, .fg textarea { width:100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-family: inherit; background: var(--bg); }
+    .fg textarea { min-height: 44px; resize: vertical; }
+    .fr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
-    .badge-green { background: #23863633; color: var(--green); }
-    .badge-red { background: #f8514933; color: var(--red); }
+    #demo-box { display: none; }
+    #demo-box.on { display: block; }
+    #demo-pre { font-family: 'SF Mono',monospace; font-size: 12px; color: var(--accent2); line-height: 1.7; }
 
-    #demo-output { display: none; }
-    #demo-output.show { display: block; }
-    #demo-results { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--green); line-height: 1.6; }
-
-    @media (max-width: 768px) { .stats { grid-template-columns: 1fr 1fr; } .grid2, .grid3 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .kpi,.g2,.g73 { grid-template-columns: 1fr; } nav { padding: 0 16px; } .wrap { padding: 16px; } }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="header-inner">
-      <div>
-        <div class="logo">Chain<span>Pay</span></div>
-        <div style="font-size:12px;color:var(--text3);margin-top:2px">Self-Custodial Agent Commerce Protocol</div>
+  <nav>
+    <div class="logo">Chain<em>Pay</em></div>
+    <div class="pills">
+      <span class="pill">Tether WDK</span>
+      <span class="pill">x402</span>
+      <span class="pill">Claude AI</span>
+      <span class="pill">7 Chains</span>
+    </div>
+  </nav>
+
+  <section style="background:#fff;border-bottom:1px solid var(--border);padding:48px 20px;text-align:center">
+    <div style="max-width:640px;margin:0 auto">
+      <h1 style="font-size:36px;font-weight:700;letter-spacing:-1px;line-height:1.2">The commerce protocol<br>for <span style="color:var(--accent)">autonomous agents</span></h1>
+      <p style="color:var(--text2);margin:16px 0 24px;font-size:15px;line-height:1.6">Agents publish services, negotiate prices, escrow USDT, validate deliverables with AI, and settle payments across 7 chains. Self-custodial. No intermediaries.</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <a href="#app" class="btn btn-go" style="text-decoration:none;padding:10px 24px">Open App</a>
+        <a href="https://github.com/edwardtay/chainpay" target="_blank" class="btn" style="text-decoration:none;padding:10px 24px">GitHub</a>
       </div>
-      <div class="header-tags">
-        <span class="htag active">Tether WDK</span>
-        <span class="htag">x402</span>
-        <span class="htag">Claude AI</span>
-        <span class="htag">9 Chains</span>
+      <div style="display:flex;gap:20px;justify-content:center;margin-top:32px;color:var(--text3);font-size:12px;font-weight:500">
+        <span>9 WDK Packages</span>
+        <span>6 Payment Protocols</span>
+        <span>200 Tests</span>
+        <span>7 Chains</span>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="container">
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat-card">
-        <div class="label">Agent Status</div>
-        <div class="value" style="color:var(--green)" id="stat-status">Online</div>
-        <div class="sub">Autonomous brain: <span id="brain-status-mini" style="color:var(--red)">off</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Total Escrowed</div>
-        <div class="value" id="stat-escrowed">0.00</div>
-        <div class="sub">USDT locked in escrows</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Services</div>
-        <div class="value" id="stat-services">0</div>
-        <div class="sub">On marketplace</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Agent Actions</div>
-        <div class="value" id="stat-actions">0</div>
-        <div class="sub">AI decisions made</div>
-      </div>
+  <section style="background:var(--bg);padding:32px 20px 0">
+    <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center">
+      <div style="padding:20px"><div style="font-size:24px;margin-bottom:8px">&#x1f91d;</div><div style="font-weight:600;margin-bottom:4px">Escrow + AI Validation</div><div style="font-size:12px;color:var(--text2)">Funds locked until Claude AI approves delivery quality</div></div>
+      <div style="padding:20px"><div style="font-size:24px;margin-bottom:8px">&#x1f4b1;</div><div style="font-weight:600;margin-bottom:4px">x402 Micropayments</div><div style="font-size:12px;color:var(--text2)">HTTP-native pay-per-API-call. Agents auto-pay USDT</div></div>
+      <div style="padding:20px"><div style="font-size:24px;margin-bottom:8px">&#x2696;&#xfe0f;</div><div style="font-weight:600;margin-bottom:4px">AI Dispute Resolution</div><div style="font-size:12px;color:var(--text2)">Rejected deliverables go to AI arbitration</div></div>
+    </div>
+  </section>
+
+  <div class="wrap" id="app">
+    <div class="kpi">
+      <div class="kpi-card"><div class="kpi-label">Status</div><div class="kpi-val" id="s-status">Online</div><div class="kpi-sub">Brain: <span id="s-brain" style="color:var(--red)">off</span></div></div>
+      <div class="kpi-card"><div class="kpi-label">Escrowed</div><div class="kpi-val" id="s-esc">0.00</div><div class="kpi-sub">USDT in escrow</div></div>
+      <div class="kpi-card"><div class="kpi-label">Services</div><div class="kpi-val" id="s-svc">0</div><div class="kpi-sub">On marketplace</div></div>
+      <div class="kpi-card"><div class="kpi-label">Actions</div><div class="kpi-val" id="s-act">0</div><div class="kpi-sub">AI decisions</div></div>
     </div>
 
-    <!-- Actions -->
-    <div class="actions">
-      <button class="btn btn-primary" onclick="runDemo()" id="demoBtn">Run Demo</button>
+    <div class="toolbar">
+      <button class="btn btn-go" onclick="runDemo()" id="demoBtn">Run Demo</button>
       <button class="btn" onclick="toggleBrain()" id="brainBtn">Start Brain</button>
-      <button class="btn btn-sm" onclick="api('/api/addresses')">Addresses</button>
-      <button class="btn btn-sm" onclick="api('/api/balances')">Balances</button>
-      <button class="btn btn-sm" onclick="api('/api/services')">Services</button>
-      <button class="btn btn-sm" onclick="api('/api/escrows')">Escrows</button>
-      <button class="btn btn-sm" onclick="api('/api/negotiations')">Negotiations</button>
-      <button class="btn btn-sm" onclick="api('/api/disputes')">Disputes</button>
-      <button class="btn btn-sm" onclick="api('/api/subscriptions')">Subscriptions</button>
-      <button class="btn btn-sm" onclick="api('/api/autonomous')">Brain Status</button>
-      <button class="btn btn-sm" onclick="window.open('/api/audit')">Audit Trail</button>
+      <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
+      <button class="btn btn-s" onclick="api('/api/addresses')">Addresses</button>
+      <button class="btn btn-s" onclick="api('/api/balances')">Balances</button>
+      <button class="btn btn-s" onclick="api('/api/services')">Services</button>
+      <button class="btn btn-s" onclick="api('/api/escrows')">Escrows</button>
+      <button class="btn btn-s" onclick="api('/api/negotiations')">Negotiations</button>
+      <button class="btn btn-s" onclick="api('/api/disputes')">Disputes</button>
+      <button class="btn btn-s" onclick="api('/api/subscriptions')">Subs</button>
+      <button class="btn btn-s" onclick="window.open('/api/audit')">Audit</button>
     </div>
 
-    <!-- Demo output -->
-    <div id="demo-output" class="card" style="margin-bottom:20px">
-      <div class="card-header"><h3>Demo Scenario</h3></div>
-      <div class="card-body"><pre id="demo-results"></pre></div>
+    <div id="demo-box" class="card" style="margin-bottom:20px">
+      <div class="card-h"><h3>Demo</h3></div>
+      <div class="card-b"><pre id="demo-pre"></pre></div>
     </div>
 
-    <!-- Flow diagram -->
     <div class="card" style="margin-bottom:20px">
-      <div class="card-header"><h3>Agent Commerce Flow</h3></div>
-      <div class="flow">
-        <span class="flow-node action">Publish</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node action">Discover</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node ai">Negotiate</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node payment">Escrow</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node action">Deliver</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node ai">AI Validate</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node payment">Release</span>
-      </div>
-      <div class="flow" style="padding-top:0">
-        <span style="color:var(--text3);font-size:12px">If rejected:</span>
-        <span class="flow-node danger">Dispute</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node ai">AI Arbitrate</span><span class="flow-arr">&rarr;</span>
-        <span class="flow-node payment">Resolve</span>
+      <div class="flow-bar">
+        <span class="fn fn-a">Publish</span><span class="fa">&rarr;</span>
+        <span class="fn fn-a">Discover</span><span class="fa">&rarr;</span>
+        <span class="fn fn-ai">Negotiate</span><span class="fa">&rarr;</span>
+        <span class="fn fn-p">Escrow</span><span class="fa">&rarr;</span>
+        <span class="fn fn-a">Deliver</span><span class="fa">&rarr;</span>
+        <span class="fn fn-ai">AI Validate</span><span class="fa">&rarr;</span>
+        <span class="fn fn-p">Release</span>
+        <span style="margin:0 8px;color:var(--text3)">|</span>
+        <span class="fn fn-d">Dispute</span><span class="fa">&rarr;</span>
+        <span class="fn fn-ai">Arbitrate</span><span class="fa">&rarr;</span>
+        <span class="fn fn-p">Resolve</span>
       </div>
     </div>
 
-    <!-- Main grid -->
-    <div class="grid3">
-      <!-- Chat -->
+    <div class="grid g73">
       <div class="card">
-        <div class="card-header">
-          <h3>Agent Chat</h3>
-          <span class="badge badge-green">AI-Powered</span>
-        </div>
-        <div class="card-body">
-          <div class="chat-box">
-            <input type="text" id="chatInput" placeholder='Try: "Publish an API service for 0.50 USDT on polygon"' onkeydown="if(event.key==='Enter')sendChat()" />
-            <button class="btn btn-primary" onclick="sendChat()">Send</button>
+        <div class="card-h"><h3>Agent Chat</h3><span class="tag tag-p">AI</span></div>
+        <div class="card-b">
+          <div class="chat-row">
+            <input id="ci" placeholder='e.g. "Publish an API for 0.50 USDT on polygon"' onkeydown="if(event.key==='Enter')chat()">
+            <button class="btn btn-go" onclick="chat()">Send</button>
           </div>
-          <div id="response">Ready. Try:
-  "Publish a data analysis service for 2 USDT on polygon"
-  "Find services under 5 USDT"
-  "Check my balances"
-  "Show active escrows"
-  "Optimize my idle funds"</div>
+          <div id="out">Try: "Check my balances" or "Find services under 5 USDT"</div>
         </div>
       </div>
-
-      <!-- Activity feed -->
       <div class="card">
-        <div class="card-header">
-          <h3>Activity</h3>
-          <span id="brain-status" class="badge badge-red">Brain Off</span>
-        </div>
-        <div class="card-body scroll" id="activity-feed">
-          <div style="color:var(--text3);font-size:12px;text-align:center;padding:20px">
-            Click "Run Demo" or "Start Brain" to see activity
-          </div>
-        </div>
+        <div class="card-h"><h3>Activity</h3><span id="brain-tag" class="tag tag-r">Off</span></div>
+        <div class="card-b scroll" id="feed"><div style="color:var(--text3);text-align:center;padding:16px;font-size:12px">Click Run Demo</div></div>
       </div>
     </div>
 
-    <!-- Bottom grid -->
-    <div class="grid2">
-      <!-- Publish service -->
+    <div class="grid g2">
       <div class="card">
-        <div class="card-header"><h3>Publish Service</h3></div>
-        <div class="card-body">
-          <div class="form-group">
-            <label>Service Name</label>
-            <input id="svcName" placeholder="Image Generation API" />
+        <div class="card-h"><h3>Publish Service</h3></div>
+        <div class="card-b">
+          <div class="fg"><label>Name</label><input id="sn" placeholder="Image Generation API"></div>
+          <div class="fg"><label>Description</label><textarea id="sd" placeholder="Describe the service"></textarea></div>
+          <div class="fr">
+            <div class="fg"><label>Price (USDT)</label><input id="sp" type="number" step="0.01" placeholder="0.50"></div>
+            <div class="fg"><label>Chain</label><select id="sc"><option>polygon</option><option>arbitrum</option><option>ethereum</option><option>sepolia</option></select></div>
           </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea id="svcDesc" placeholder="Generate images from text prompts"></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label>Price (USDT)</label><input id="svcPrice" type="number" step="0.01" placeholder="0.50" /></div>
-            <div class="form-group"><label>Chain</label><select id="svcChain"><option value="polygon">Polygon</option><option value="arbitrum">Arbitrum</option><option value="ethereum">Ethereum</option><option value="sepolia">Sepolia</option></select></div>
-          </div>
-          <button class="btn btn-primary" onclick="publishService()">Publish</button>
+          <button class="btn btn-go" onclick="pub()">Publish</button>
         </div>
       </div>
-
-      <!-- x402 Services -->
       <div class="card">
-        <div class="card-header">
-          <h3>x402 Pay-Per-Use APIs</h3>
-          <span class="badge badge-green">HTTP 402</span>
-        </div>
-        <div class="card-body" id="x402-services">Loading...</div>
+        <div class="card-h"><h3>x402 APIs</h3><span class="tag tag-g">HTTP 402</span></div>
+        <div class="card-b" id="x4">Loading...</div>
       </div>
     </div>
   </div>
 
   <script>
-    async function api(url) {
-      const r = await fetch(url); const d = await r.json();
-      document.getElementById('response').textContent = JSON.stringify(d, null, 2);
-    }
-    async function sendChat() {
-      const input = document.getElementById('chatInput');
-      const msg = input.value; if (!msg) return;
-      document.getElementById('response').textContent = 'Thinking...';
-      input.value = '';
-      const r = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({message:msg}) });
-      const d = await r.json();
-      document.getElementById('response').textContent = d.response || JSON.stringify(d, null, 2);
-      refreshStats();
-    }
-    async function publishService() {
-      const body = { name: document.getElementById('svcName').value, description: document.getElementById('svcDesc').value, priceUsdt: document.getElementById('svcPrice').value, chain: document.getElementById('svcChain').value };
-      const r = await fetch('/api/services', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-      document.getElementById('response').textContent = JSON.stringify(await r.json(), null, 2);
-      refreshStats();
-    }
-    async function refreshStats() {
-      try {
-        const [e, s, x, l] = await Promise.all([
-          fetch('/api/escrows').then(r=>r.json()),
-          fetch('/api/services').then(r=>r.json()),
-          fetch('/api/x402/services').then(r=>r.json()),
-          fetch('/api/log').then(r=>r.json()),
-        ]);
-        document.getElementById('stat-escrowed').textContent = (e.totalEscrowed||'0.00')+' USDT';
-        document.getElementById('stat-services').textContent = (s.services?.length||0);
-        document.getElementById('stat-actions').textContent = l.count||0;
-        const x4 = document.getElementById('x402-services');
-        if (x.services) x4.innerHTML = x.services.map(s=>'<div class="svc-item"><div><div class="svc-name">'+s.description+'</div><div class="svc-meta">GET '+s.endpoint+'</div></div><div class="svc-price">'+s.price+'</div></div>').join('');
-        // Activity feed
-        if (l.log?.length) {
-          document.getElementById('activity-feed').innerHTML = l.log.slice(-10).reverse().map(a=>{
-            const cls = a.type.includes('fail')||a.type.includes('error')?'ev-red':a.type.includes('ai')||a.type.includes('decision')?'ev-purple':'ev-green';
-            return '<div class="event '+cls+'"><div class="ev-type">'+a.type+'</div><div class="ev-desc">'+a.description.substring(0,100)+'</div>'+(a.aiReasoning?'<div class="ev-ai">AI: '+a.aiReasoning.substring(0,80)+'</div>':'')+'</div>';
-          }).join('');
-        }
-      } catch {}
-    }
-    let brainPoll=null;
-    async function toggleBrain(){
-      const b=document.getElementById('brainBtn'),s=document.getElementById('brain-status'),sm=document.getElementById('brain-status-mini');
-      const c=await fetch('/api/autonomous').then(r=>r.json());
-      if(c.running){
-        await fetch('/api/autonomous/stop',{method:'POST'});
-        s.textContent='Brain Off';s.className='badge badge-red';sm.textContent='off';sm.style.color='var(--red)';b.textContent='Start Brain';
-        if(brainPoll){clearInterval(brainPoll);brainPoll=null;}
-      } else {
-        await fetch('/api/autonomous/start',{method:'POST'});
-        s.textContent='Brain On';s.className='badge badge-green';sm.textContent='on';sm.style.color='var(--green)';b.textContent='Stop Brain';
-        brainPoll=setInterval(refreshStats,5000);
-      }
-    }
-    async function runDemo(){
-      const b=document.getElementById('demoBtn');b.textContent='Running...';b.disabled=true;
-      const o=document.getElementById('demo-output');o.classList.add('show');
-      document.getElementById('demo-results').textContent='Executing agent commerce scenario...';
-      try{
-        const d=await fetch('/api/demo',{method:'POST'}).then(r=>r.json());
-        let out=d.status+'\\n\\n';
-        if(d.steps) d.steps.forEach((s,i)=>{out+=(i+1)+'. '+s+'\\n';});
-        if(d.summary) out+='\\nServices: '+d.summary.services+' | Escrows: '+d.summary.escrowsCompleted+' | Subs: '+d.summary.subscriptionsActive;
-        document.getElementById('demo-results').textContent=out;
-        refreshStats();
-      }catch(e){document.getElementById('demo-results').textContent='Error: '+e.message;}
-      b.textContent='Run Demo';b.disabled=false;
-    }
-    refreshStats();
-    setInterval(refreshStats,15000);
+    const $=id=>document.getElementById(id);
+    async function api(u){const d=await(await fetch(u)).json();$('out').textContent=JSON.stringify(d,null,2);}
+    async function chat(){const i=$('ci'),m=i.value;if(!m)return;$('out').textContent='Thinking...';i.value='';const d=await(await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})})).json();$('out').textContent=d.response||JSON.stringify(d,null,2);rf();}
+    async function pub(){const b={name:$('sn').value,description:$('sd').value,priceUsdt:$('sp').value,chain:$('sc').value};$('out').textContent=JSON.stringify(await(await fetch('/api/services',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)})).json(),null,2);rf();}
+    async function rf(){try{const[e,s,x,l]=await Promise.all([fetch('/api/escrows').then(r=>r.json()),fetch('/api/services').then(r=>r.json()),fetch('/api/x402/services').then(r=>r.json()),fetch('/api/log').then(r=>r.json())]);$('s-esc').textContent=(e.totalEscrowed||'0.00')+' USDT';$('s-svc').textContent=s.services?.length||0;$('s-act').textContent=l.count||0;if(x.services)$('x4').innerHTML=x.services.map(s=>'<div class="row"><div><div class="row-t">'+s.description+'</div><div class="row-m">GET '+s.endpoint+'</div></div><div class="row-p">'+s.price+'</div></div>').join('');if(l.log?.length)$('feed').innerHTML=l.log.slice(-8).reverse().map(a=>'<div class="ev '+(a.type.includes('fail')?'ev-r':a.type.includes('decision')?'ev-p':'ev-g')+'"><b>'+a.type+'</b> '+a.description.substring(0,90)+'</div>').join('');}catch{}}
+    let bp=null;
+    async function toggleBrain(){const c=await(await fetch('/api/autonomous')).json();if(c.running){await fetch('/api/autonomous/stop',{method:'POST'});$('brain-tag').textContent='Off';$('brain-tag').className='tag tag-r';$('s-brain').textContent='off';$('s-brain').style.color='var(--red)';$('brainBtn').textContent='Start Brain';if(bp){clearInterval(bp);bp=null;}}else{await fetch('/api/autonomous/start',{method:'POST'});$('brain-tag').textContent='On';$('brain-tag').className='tag tag-g';$('s-brain').textContent='on';$('s-brain').style.color='var(--accent)';$('brainBtn').textContent='Stop Brain';bp=setInterval(rf,5000);}}
+    async function runDemo(){const b=$('demoBtn');b.textContent='Running...';b.disabled=true;$('demo-box').classList.add('on');$('demo-pre').textContent='Running...';try{const d=await(await fetch('/api/demo',{method:'POST'})).then(r=>r.json());let o=d.status+'\\n\\n';if(d.steps)d.steps.forEach((s,i)=>{o+=(i+1)+'. '+s+'\\n';});if(d.summary)o+='\\n'+JSON.stringify(d.summary);$('demo-pre').textContent=o;rf();}catch(e){$('demo-pre').textContent='Error: '+e.message;}b.textContent='Run Demo';b.disabled=false;}
+    rf();setInterval(rf,15000);
   </script>
 </body>
 </html>`;
